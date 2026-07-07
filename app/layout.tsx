@@ -22,7 +22,7 @@ const ibmPlexMono = IBM_Plex_Mono({
 });
 
 export const metadata = {
-  title: "Kadam",
+  title: "Kadam — AI Civic Companion",
   description: "AI Civic Companion",
 };
 

@@ -101,7 +101,7 @@ export default function Home() {
     <div className="mx-auto max-w-3xl px-4 py-10 sm:px-6 sm:py-14">
       <header>
         <p className="font-mono text-xs uppercase tracking-[0.2em] text-accent">
-          Smart Bharat
+          Kadam
         </p>
         <h1 className="mt-2 font-display text-3xl font-semibold leading-tight text-ink sm:text-4xl">
           One companion for every civic situation
