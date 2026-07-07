@@ -117,8 +117,12 @@ If Gemini is unavailable (no API key, rate limit, network error), pre-generated 
 ## ✨ Key Features
 
 - **Single reasoning engine** — Gemini classifies intent AND generates structured output in one call
-- **Grounded scheme data** — Grounded in a curated database of 16 real Government of India schemes, showing verified/AI-estimate trust badges in the UI
+- **Location-aware query parsing** — Automatically extracts 6-digit Indian PIN codes and queries the open Postal PIN Code API to fetch and inject district/state details into the system prompt
+- **Grounded scheme data** — Verified recommendations annotated against 16 real Government of India schemes, showing Verified/AI-estimate badges
 - **Voice input** — Native speech-to-text input powered by the Web Speech API
+- **Session persistence & local insights** — Restorable client sessions and understated usage insights, stored locally in the browser with clear controls
+- **Server-side rate limiting & size caps** — Limits clients to 10 requests/min per IP and enforces a strict 3,000 character payload cap to protect API quota
+- **React Error Boundary** — Isolates rendering crashes inside card components, displaying clean fallbacks instead of crashing the application page
 - **Multilingual UI + AI responses** — English, Hindi, Telugu, Tamil, Bengali, Marathi
 - **Staggered reveal animations** — Steps appear one-by-one as if the AI is reasoning in real-time
 - **Copy-to-clipboard** — One-click copy of journey steps or complaint drafts
