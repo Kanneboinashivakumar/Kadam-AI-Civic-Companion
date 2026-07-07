@@ -252,7 +252,7 @@ export default function Home() {
   const [showIntro, setShowIntro] = useState(true);
 
   useEffect(() => {
-    const timer = setTimeout(() => setShowIntro(false), 2800);
+    const timer = setTimeout(() => setShowIntro(false), 3400);
     return () => clearTimeout(timer);
   }, []);
 
@@ -309,18 +309,13 @@ export default function Home() {
         <motion.div
           key="intro"
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.5, ease: "easeIn" }}
+          transition={{ duration: 0.6, ease: "easeIn" }}
           className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-ink"
         >
-          {/* logo mark */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.6, ease: "easeOut" }}
-            className="text-accent"
-          >
+          {/* animated path logo mark */}
+          <div className="text-accent flex items-center justify-center">
             <svg
-              className="h-12 w-12 sm:h-16 sm:w-16"
+              className="h-16 w-16 sm:h-20 sm:w-20"
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
@@ -328,29 +323,68 @@ export default function Home() {
               strokeLinecap="round"
               strokeLinejoin="round"
             >
-              <path d="M 4 18 C 8 18, 8 12, 12 12 C 16 12, 16 6, 20 6" />
-              <circle cx="4" cy="18" r="2" fill="currentColor" />
-              <circle cx="12" cy="12" r="2" fill="currentColor" />
-              <circle cx="20" cy="6" r="2" fill="currentColor" />
+              <motion.path
+                d="M 4 18 C 8 18, 8 12, 12 12 C 16 12, 16 6, 20 6"
+                initial={{ pathLength: 0 }}
+                animate={{ pathLength: 1 }}
+                transition={{ duration: 0.9, ease: "easeInOut" }}
+              />
+              <motion.circle
+                cx="4"
+                cy="18"
+                r="2"
+                fill="currentColor"
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ delay: 0.25, duration: 0.3, type: "spring", stiffness: 200 }}
+              />
+              <motion.circle
+                cx="12"
+                cy="12"
+                r="2"
+                fill="currentColor"
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ delay: 0.55, duration: 0.3, type: "spring", stiffness: 200 }}
+              />
+              <motion.circle
+                cx="20"
+                cy="6"
+                r="2"
+                fill="currentColor"
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ delay: 0.85, duration: 0.3, type: "spring", stiffness: 200 }}
+              />
             </svg>
-          </motion.div>
+          </div>
 
-          {/* wordmark */}
+          {/* wordmark with staggered letter reveal */}
           <motion.h1
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, ease: "easeOut", delay: 0.5 }}
-            className="mt-5 font-display text-4xl sm:text-5xl font-bold tracking-tight text-bg"
+            className="mt-6 font-display text-4xl sm:text-5xl font-bold tracking-tight text-bg flex gap-1 justify-center"
           >
-            Kadam
+            {"Kadam".split("").map((char, index) => (
+              <motion.span
+                key={index}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{
+                  delay: 0.75 + index * 0.08,
+                  duration: 0.45,
+                  ease: "easeOut",
+                }}
+              >
+                {char}
+              </motion.span>
+            ))}
           </motion.h1>
 
-          {/* tagline */}
+          {/* tagline with letter spacing expander */}
           <motion.p
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, ease: "easeOut", delay: 1.0 }}
-            className="mt-3 font-mono text-xs sm:text-sm uppercase tracking-[0.25em] text-bg/50"
+            initial={{ opacity: 0, letterSpacing: "0.1em" }}
+            animate={{ opacity: 1, letterSpacing: "0.25em" }}
+            transition={{ duration: 0.9, ease: "easeOut", delay: 1.25 }}
+            className="mt-4 font-mono text-xs sm:text-sm uppercase text-bg/50 text-center px-4"
           >
             AI Civic Companion
           </motion.p>
@@ -359,8 +393,8 @@ export default function Home() {
           <motion.div
             initial={{ scaleX: 0 }}
             animate={{ scaleX: 1 }}
-            transition={{ duration: 0.6, ease: "easeOut", delay: 1.4 }}
-            className="mt-6 h-px w-16 origin-center bg-accent/60"
+            transition={{ duration: 0.7, ease: "easeOut", delay: 1.75 }}
+            className="mt-6 h-px w-24 origin-center bg-accent/60"
           />
         </motion.div>
       ) : (
