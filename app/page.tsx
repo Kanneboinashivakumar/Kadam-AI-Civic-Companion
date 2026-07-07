@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { motion, type Variants } from "framer-motion";
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence, type Variants } from "framer-motion";
 import {
   Sparkles, Milestone, FileText, BookOpen, MessageSquare,
   ShieldCheck, Eye, HardDrive,
@@ -249,6 +249,12 @@ export default function Home() {
   const [lastMessage, setLastMessage] = useState("");
   const [followups, setFollowups] = useState<FollowupItem[]>([]);
   const [followupLoading, setFollowupLoading] = useState(false);
+  const [showIntro, setShowIntro] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setShowIntro(false), 2800);
+    return () => clearTimeout(timer);
+  }, []);
 
   async function ask(message: string, lang = language) {
     setLoading(true);
@@ -298,6 +304,72 @@ export default function Home() {
   const strings = UI_STRINGS[language] || UI_STRINGS.English;
 
   return (
+    <AnimatePresence mode="wait">
+      {showIntro ? (
+        <motion.div
+          key="intro"
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.5, ease: "easeIn" }}
+          className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-ink"
+        >
+          {/* logo mark */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.6, ease: "easeOut" }}
+            className="text-accent"
+          >
+            <svg
+              className="h-12 w-12 sm:h-16 sm:w-16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M 4 18 C 8 18, 8 12, 12 12 C 16 12, 16 6, 20 6" />
+              <circle cx="4" cy="18" r="2" fill="currentColor" />
+              <circle cx="12" cy="12" r="2" fill="currentColor" />
+              <circle cx="20" cy="6" r="2" fill="currentColor" />
+            </svg>
+          </motion.div>
+
+          {/* wordmark */}
+          <motion.h1
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, ease: "easeOut", delay: 0.5 }}
+            className="mt-5 font-display text-4xl sm:text-5xl font-bold tracking-tight text-bg"
+          >
+            Kadam
+          </motion.h1>
+
+          {/* tagline */}
+          <motion.p
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, ease: "easeOut", delay: 1.0 }}
+            className="mt-3 font-mono text-xs sm:text-sm uppercase tracking-[0.25em] text-bg/50"
+          >
+            AI Civic Companion
+          </motion.p>
+
+          {/* subtle accent line */}
+          <motion.div
+            initial={{ scaleX: 0 }}
+            animate={{ scaleX: 1 }}
+            transition={{ duration: 0.6, ease: "easeOut", delay: 1.4 }}
+            className="mt-6 h-px w-16 origin-center bg-accent/60"
+          />
+        </motion.div>
+      ) : (
+        <motion.div
+          key="main"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5, ease: "easeOut" }}
+        >
     <div className="mx-auto max-w-3xl px-4 py-16 sm:px-6 sm:py-24">
       {/* ── hero with sequential entrance beats ────────── */}
       <header>
@@ -422,5 +494,8 @@ export default function Home() {
         </p>
       </footer>
     </div>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 }
