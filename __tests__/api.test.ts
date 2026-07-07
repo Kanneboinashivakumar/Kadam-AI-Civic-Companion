@@ -1,6 +1,34 @@
-import { expect, test } from "vitest";
+import { expect, test, vi, beforeEach, afterEach } from "vitest";
 import { POST } from "@/app/api/generate/route";
 import { NextRequest } from "next/server";
+
+const originalFetch = global.fetch;
+
+beforeEach(() => {
+  global.fetch = vi.fn().mockImplementation((url: string) => {
+    if (url.includes("postalpincode.in")) {
+      return Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve([
+          {
+            Status: "Success",
+            PostOffice: [
+              {
+                District: "Bangalore",
+                State: "Karnataka"
+              }
+            ]
+          }
+        ])
+      } as any);
+    }
+    return originalFetch(url);
+  });
+});
+
+afterEach(() => {
+  global.fetch = originalFetch;
+});
 
 test("API route returns valid response shape", async () => {
   const req = new NextRequest("http://localhost/api/generate", {
@@ -184,4 +212,19 @@ test("API route enforces rate limit and returns 429 after limit exceeded", async
   const res11 = await POST(req11);
   expect(res11.status).toBe(429);
   expect(res11.headers.get("Retry-After")).toBe("60");
+});
+
+test("API route parses PIN code and fetches location successfully", async () => {
+  const req = new NextRequest("http://localhost/api/generate", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      message: "I need local help in Yelahanka, PIN code 560064",
+      language: "English",
+    }),
+  });
+
+  const response = await POST(req);
+  expect(response.status).toBe(200);
+  expect(global.fetch).toHaveBeenCalledWith("https://api.postalpincode.in/pincode/560064", expect.any(Object));
 });

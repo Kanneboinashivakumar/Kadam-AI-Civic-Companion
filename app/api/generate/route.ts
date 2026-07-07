@@ -82,7 +82,32 @@ export async function POST(request: Request) {
 
     // Ground scheme recommendations in the curated real-scheme dataset.
     const grounding = selectSchemesForMessage(message);
-    const system = buildSystemPrompt(language, context, grounding);
+    
+    // Parse for 6-digit PIN code and fetch location details from open postal API
+    let locationContext = "";
+    const pinMatch = message.match(/\b\d{6}\b/);
+    if (pinMatch) {
+      const pincode = pinMatch[0];
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 2000); // 2 second timeout
+        const pinRes = await fetch(`https://api.postalpincode.in/pincode/${pincode}`, {
+          signal: controller.signal,
+        });
+        clearTimeout(timeoutId);
+        if (pinRes.ok) {
+          const pinData = await pinRes.json();
+          if (pinData?.[0]?.Status === "Success" && pinData[0].PostOffice?.[0]) {
+            const po = pinData[0].PostOffice[0];
+            locationContext = `\n\nUSER LOCATION CONTEXT: The query is associated with PIN code ${pincode} (${po.District} District, ${po.State}, India). Tailor your answers (such as local department routing or state-specific criteria) specifically to this location where appropriate.`;
+          }
+        }
+      } catch (e) {
+        console.warn("Failed to fetch location details for PIN code:", pincode, e);
+      }
+    }
+
+    const system = buildSystemPrompt(language, context, grounding) + locationContext;
     const raw = await generate(message, RESPONSE_JSON_SCHEMA, system);
     const data = JSON.parse(stripFences(raw));
 

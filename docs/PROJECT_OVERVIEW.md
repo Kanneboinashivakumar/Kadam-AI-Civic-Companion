@@ -87,6 +87,14 @@ Here is how a request travels through Kadam from typing to rendering:
   - Counts the number of times each response type was generated, showing an understated *"Most requested: X"* line in the footer.
   - Includes a *"Clear my data"* link to erase all session history.
 
+### 7. Location-Aware Postal PIN Code API Parsing
+- *What it is*: Automatically parses queries for 6-digit Indian PIN codes and fetches their location details.
+- *How it works*: 
+  - Extracts 6-digit PIN codes from user queries via regular expressions.
+  - Queries the free, public Postal PIN Code API (`https://api.postalpincode.in/pincode/{PIN}`) to resolve the associated District and State.
+  - Dynamically injects this location context into the Gemini system prompt, making the model's response (such as department routing or state eligibility) highly location-aware.
+  - Employs a 2-second timeout and abort controllers to prevent remote API latency from slowing down user responses.
+
 ---
 
 ## 6. Quick Start: Files to Read First

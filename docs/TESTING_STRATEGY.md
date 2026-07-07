@@ -35,6 +35,7 @@ All test suites are located in the `__tests__/` directory.
   - Robust handling of unsupported languages (graceful English fallback).
   - Validation of message size caps (rejects queries larger than 3,000 characters with `400 Bad Request`).
   - IP-based Rate Limiting (asserts that the 11th request from the same IP returns `429 Too Many Requests` and includes correct `Retry-After` headers).
+  - Regex-based 6-digit Indian PIN code extraction and mock integration tests calling the free Postal PIN Code API (checking that it resolves location context to pass to Gemini).
 
 ### 2. Component Integration Coverage (`__tests__/components.test.tsx`)
 * **Purpose**: Exercises UI primitives and input elements.
