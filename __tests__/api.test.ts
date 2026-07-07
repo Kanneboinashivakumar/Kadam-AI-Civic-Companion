@@ -94,3 +94,40 @@ test("API route follow-up request returns followup type response", async () => {
   expect(data).toHaveProperty("type");
   expect(["journey", "complaint", "scheme", "document", "followup"]).toContain(data.type);
 });
+
+test("API route handles unknown/unsupported language gracefully", async () => {
+  const req = new NextRequest("http://localhost/api/generate", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      message: "I need to file a complaint",
+      language: "German", // Unsupported language
+    }),
+  });
+
+  const response = await POST(req);
+  expect(response.status).toBe(200);
+
+  const data = await response.json();
+  expect(data).toHaveProperty("type");
+  expect(["journey", "complaint", "scheme", "document", "followup"]).toContain(data.type);
+});
+
+test("API route handles unusually long message without error", async () => {
+  const longMessage = "a".repeat(2500);
+  const req = new NextRequest("http://localhost/api/generate", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      message: longMessage,
+      language: "English",
+    }),
+  });
+
+  const response = await POST(req);
+  expect(response.status).toBe(200);
+
+  const data = await response.json();
+  expect(data).toHaveProperty("type");
+  expect(["journey", "complaint", "scheme", "document", "followup"]).toContain(data.type);
+});

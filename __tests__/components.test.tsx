@@ -164,3 +164,149 @@ test("InputBar triggers onSubmit with typed value", () => {
   expect(submittedMessage).toBe("Help with passport application");
   root.unmount();
 });
+
+test("SpeechRecognition integration test (start, locale selection, and transcription)", () => {
+  let lastRecognitionInstance: any = null;
+  const mockStart = vi.fn();
+
+  class MockSpeechRecognition {
+    lang = "";
+    interimResults = false;
+    continuous = false;
+    onresult: any = null;
+    onerror: any = null;
+    onend: any = null;
+
+    constructor() {
+      lastRecognitionInstance = this;
+    }
+
+    start = mockStart;
+  }
+
+  (window as any).SpeechRecognition = MockSpeechRecognition;
+
+  const container = document.createElement("div");
+  const root = createRoot(container);
+
+  // Test 1: Hindi locale selection
+  act(() => {
+    root.render(
+      <InputBar
+        onSubmit={() => {}}
+        language="Hindi"
+        onLanguageChange={() => {}}
+        loading={false}
+      />
+    );
+  });
+
+  const micButton = container.querySelector('button[aria-label="बोलें"]') as HTMLButtonElement;
+  expect(micButton).not.toBeNull();
+
+  act(() => {
+    micButton.click();
+  });
+
+  expect(mockStart).toHaveBeenCalled();
+  expect(lastRecognitionInstance.lang).toBe("hi-IN");
+
+  // Test 2: Simulating transcribed speech result
+  act(() => {
+    // Simulate speech recognition event
+    const event = {
+      results: [
+        [{ transcript: "मेरा नाम कुमार है" }]
+      ]
+    };
+    lastRecognitionInstance.onresult(event);
+  });
+
+  act(() => {
+    lastRecognitionInstance.onend();
+  });
+
+  const input = container.querySelector("input") as HTMLInputElement;
+  expect(input.value).toBe("मेरा नाम कुमार है");
+
+  // Test 3: Telugu locale selection
+  act(() => {
+    root.render(
+      <InputBar
+        onSubmit={() => {}}
+        language="Telugu"
+        onLanguageChange={() => {}}
+        loading={false}
+      />
+    );
+  });
+
+  const teluguMicButton = container.querySelector('button[aria-label="మాట్లాడండి"]') as HTMLButtonElement;
+  act(() => {
+    teluguMicButton.click();
+  });
+  expect(lastRecognitionInstance.lang).toBe("te-IN");
+
+  root.unmount();
+  delete (window as any).SpeechRecognition;
+});
+
+test("InputBar validation: rejects empty or whitespace-only queries and trims valid inputs", () => {
+  const container = document.createElement("div");
+  const root = createRoot(container);
+  let submittedCount = 0;
+  let submittedVal = "";
+
+  act(() => {
+    root.render(
+      <InputBar
+        onSubmit={(msg) => {
+          submittedCount++;
+          submittedVal = msg;
+        }}
+        language="English"
+        onLanguageChange={() => {}}
+        loading={false}
+      />
+    );
+  });
+
+  const input = container.querySelector("input") as HTMLInputElement;
+  const form = container.querySelector("form") as HTMLFormElement;
+
+  // 1. Submit empty value
+  act(() => {
+    const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value")?.set;
+    setter?.call(input, "");
+    input.dispatchEvent(new Event("input", { bubbles: true }));
+  });
+  act(() => {
+    form.dispatchEvent(new Event("submit", { bubbles: true }));
+  });
+  expect(submittedCount).toBe(0);
+
+  // 2. Submit whitespace-only value
+  act(() => {
+    const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value")?.set;
+    setter?.call(input, "     ");
+    input.dispatchEvent(new Event("input", { bubbles: true }));
+  });
+  act(() => {
+    form.dispatchEvent(new Event("submit", { bubbles: true }));
+  });
+  expect(submittedCount).toBe(0);
+
+  // 3. Submit valid untrimmed value (should submit trimmed value)
+  act(() => {
+    const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value")?.set;
+    setter?.call(input, "  My issue text here  ");
+    input.dispatchEvent(new Event("input", { bubbles: true }));
+  });
+  act(() => {
+    form.dispatchEvent(new Event("submit", { bubbles: true }));
+  });
+  expect(submittedCount).toBe(1);
+  expect(submittedVal).toBe("My issue text here");
+
+  root.unmount();
+});
