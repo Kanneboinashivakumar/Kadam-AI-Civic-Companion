@@ -131,3 +131,57 @@ test("API route handles unusually long message without error", async () => {
   expect(data).toHaveProperty("type");
   expect(["journey", "complaint", "scheme", "document", "followup"]).toContain(data.type);
 });
+
+test("API route rejects messages longer than 3000 characters", async () => {
+  const longMsg = "a".repeat(3001);
+  const req = new NextRequest("http://localhost/api/generate", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      message: longMsg,
+      language: "English",
+    }),
+  });
+
+  const response = await POST(req);
+  expect(response.status).toBe(400);
+
+  const data = await response.json();
+  expect(data).toEqual({ error: "Message too long (max 3000 characters)" });
+});
+
+test("API route enforces rate limit and returns 429 after limit exceeded", async () => {
+  const customIp = "192.168.1.100";
+  
+  for (let i = 0; i < 10; i++) {
+    const req = new NextRequest("http://localhost/api/generate", {
+      method: "POST",
+      headers: { 
+        "Content-Type": "application/json",
+        "x-forwarded-for": customIp
+      },
+      body: JSON.stringify({
+        message: "Hello",
+        language: "English",
+      }),
+    });
+    const res = await POST(req);
+    expect(res.status).toBe(200);
+  }
+
+  // 11th request should be rate-limited
+  const req11 = new NextRequest("http://localhost/api/generate", {
+    method: "POST",
+    headers: { 
+      "Content-Type": "application/json",
+      "x-forwarded-for": customIp
+    },
+    body: JSON.stringify({
+      message: "Hello",
+      language: "English",
+    }),
+  });
+  const res11 = await POST(req11);
+  expect(res11.status).toBe(429);
+  expect(res11.headers.get("Retry-After")).toBe("60");
+});
