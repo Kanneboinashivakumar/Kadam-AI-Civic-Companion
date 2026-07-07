@@ -2,7 +2,10 @@
 
 import { useState } from "react";
 import { motion, type Variants } from "framer-motion";
-import { Sparkles, Milestone, FileText, BookOpen, MessageSquare } from "lucide-react";
+import {
+  Sparkles, Milestone, FileText, BookOpen, MessageSquare,
+  ShieldCheck, Eye, HardDrive,
+} from "lucide-react";
 import InputBar from "@/components/companion/InputBar";
 import SuggestionChips from "@/components/companion/SuggestionChips";
 import ResponseRenderer from "@/components/companion/ResponseRenderer";
@@ -62,63 +65,183 @@ const LogoMark = () => (
   </svg>
 );
 
+/* ── animation variants ─────────────────────────────────── */
+
+const heroContainer: Variants = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.15, delayChildren: 0.08 } },
+};
+const heroItem: Variants = {
+  hidden: { opacity: 0, y: 10 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.4, ease: "easeOut" } },
+};
+
 const containerVariants: Variants = {
   hidden: { opacity: 0 },
   show: {
     opacity: 1,
-    transition: {
-      staggerChildren: 0.05,
-      delayChildren: 0.15,
-    },
+    transition: { staggerChildren: 0.05, delayChildren: 0.15 },
   },
 };
-
 const itemVariants: Variants = {
   hidden: { opacity: 0, y: 8, scale: 0.98 },
   show: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.4, ease: "easeOut" } },
 };
 
-const UI_STRINGS: Record<
-  string,
-  { headline: string; subheadline: string; tryOne: string }
-> = {
+/* ── translation strings ────────────────────────────────── */
+
+interface UIStrings {
+  headline: string;
+  subheadline: string;
+  tryOne: string;
+  features: [string, string, string, string, string];
+  chips: [string, string, string, string, string];
+  footer: string;
+  footerLabels: [string, string, string];
+}
+
+const UI_STRINGS: Record<string, UIStrings> = {
   English: {
     headline: "One companion for every civic situation",
     subheadline:
-      "Tell it what’s happening in your life — in plain words, in your language. It works out whether you need a step-by-step journey, a complaint filed, a scheme match, or a document explained.",
+      "Tell it what's happening in your life — in plain words, in your language. It works out whether you need a step-by-step journey, a complaint filed, a scheme match, or a document explained.",
     tryOne: "Try one of these",
+    features: [
+      "Life event journeys",
+      "Complaint drafting",
+      "Scheme matching",
+      "Document guidance",
+      "Follow-up answers",
+    ],
+    chips: [
+      "I just had a baby",
+      "I want to report a broken streetlight",
+      "What am I eligible for?",
+      "I'm starting a small business",
+      "I lost my job",
+    ],
+    footer:
+      "Guidance is AI-generated and may be incomplete — verify fees and deadlines with your local office. No login, nothing stored.",
+    footerLabels: ["AI-generated guidance", "Verify with officials", "Nothing stored"],
   },
   Hindi: {
     headline: "हर नागरिक समस्या के लिए एक साथी",
     subheadline:
       "अपने जीवन की परिस्थिति को सरल भाषा में बताएं। यह तय करेगा कि आपको चरण-दर-चरण प्रक्रिया, शिकायत ड्राफ्ट, योजना मिलान या दस्तावेज़ मार्गदर्शन की आवश्यकता है।",
-    tryOne: "इनमें से कोई एक आज़माएं",
+    tryOne: "इनमें से कोई एक आज़माएं",
+    features: [
+      "जीवन घटना यात्रा",
+      "शिकायत ड्राफ्टिंग",
+      "योजना मिलान",
+      "दस्तावेज़ मार्गदर्शन",
+      "अनुवर्ती उत्तर",
+    ],
+    chips: [
+      "मेरा बच्चा हुआ है",
+      "टूटी स्ट्रीटलाइट की शिकायत करनी है",
+      "मैं किसके लिए पात्र हूँ?",
+      "मैं छोटा व्यापार शुरू कर रहा हूँ",
+      "मेरी नौकरी गई",
+    ],
+    footer:
+      "यह मार्गदर्शन AI-जनित है और अधूरा हो सकता है — शुल्क और समय-सीमा अपने स्थानीय कार्यालय से सत्यापित करें। कोई लॉगिन नहीं, कुछ भी संग्रहित नहीं।",
+    footerLabels: ["AI-जनित मार्गदर्शन", "अधिकारियों से सत्यापित करें", "कुछ भी संग्रहित नहीं"],
   },
   Telugu: {
     headline: "ప్రతి పౌర సమస్యకు ఒకే తోడు",
     subheadline:
       "మీ జీవితంలో ఏమి జరుగుతుందో మీ సొంత మాటల్లో చెప్పండి. మీకు ఒక పద్ధతి ప్రకారం అడుగుల ప్రయాణం కావాలా, ఫిర్యాదు ముసాయిదా కావాలా, పథకం సరిపోలిక కావాలా లేదా పత్రం గురించి వివరణ కావాలా అనేది ఇది నిర్ణయిస్తుంది.",
     tryOne: "వీటిలో ఒకటి ప్రయత్నించండి",
+    features: [
+      "జీవిత ఘటన ప్రయాణాలు",
+      "ఫిర్యాదు ముసాయిదా",
+      "పథకం సరిపోలిక",
+      "పత్రం మార్గదర్శనం",
+      "ఫాలో-అప్ సమాధానాలు",
+    ],
+    chips: [
+      "నాకు బిడ్డ పుట్టింది",
+      "విరిగిన వీధి దీపం ఫిర్యాదు",
+      "నేను దేనికి అర్హుడిని?",
+      "చిన్న వ్యాపారం మొదలుపెడుతున్నాను",
+      "నా ఉద్యోగం పోయింది",
+    ],
+    footer:
+      "ఈ మార్గదర్శనం AI ద్వారా రూపొందించబడింది — రుసుములు మరియు గడువులను మీ స్థానిక కార్యాలయంతో ధృవీకరించండి. లాగిన్ లేదు, ఏమీ నిల్వ చేయబడదు.",
+    footerLabels: ["AI మార్గదర్శనం", "అధికారికంగా ధృవీకరించండి", "ఏమీ నిల్వ చేయబడదు"],
   },
   Tamil: {
     headline: "ஒவ்வொரு குடிமைச் சூழலுக்கும் ஒரு துணை",
     subheadline:
       "உங்கள் வாழ்க்கையில் என்ன நடக்கிறது என்பதை உங்கள் சொந்த மொழியில் எளிய சொற்களில் கூறுங்கள். உங்களுக்கு ஒரு படிநிலை வழிகாட்டி, புகார் வரைவு, திட்டப் பொருத்தம் அல்லது ஆவண விளக்கம் தேவையா என்பதை இதுவே கண்டறியும்.",
     tryOne: "இவற்றில் ஒன்றை முயற்சிக்கவும்",
+    features: [
+      "வாழ்க்கை நிகழ்வுப் பயணம்",
+      "புகார் வரைவு",
+      "திட்டப் பொருத்தம்",
+      "ஆவண வழிகாட்டி",
+      "தொடர் பதில்கள்",
+    ],
+    chips: [
+      "எனக்கு குழந்தை பிறந்தது",
+      "உடைந்த தெரு விளக்கு புகார்",
+      "நான் எதற்கு தகுதியானவன்?",
+      "சிறு தொழில் தொடங்குகிறேன்",
+      "நான் வேலை இழந்தேன்",
+    ],
+    footer:
+      "இந்த வழிகாட்டுதல் AI மூலம் உருவாக்கப்பட்டது — கட்டணங்களையும் கால அவகாசங்களையும் உங்கள் உள்ளூர் அலுவலகத்தில் சரிபார்க்கவும். உள்நுழைவு இல்லை, எதுவும் சேமிக்கப்படவில்லை.",
+    footerLabels: ["AI வழிகாட்டுதல்", "அதிகாரிகளிடம் சரிபார்க்கவும்", "எதுவும் சேமிக்கப்படவில்லை"],
   },
   Bengali: {
     headline: "প্রতিটি নাগরিক সমস্যার জন্য একটি সঙ্গী",
     subheadline:
-      "আপনার জীবনে কী ঘটছে তা আপনার নিজের ভাষায় সহজ কথায় বলুন। আপনি ধাপে ধাপে নির্দেশিকা, একটি অভিযোগের খসড়া, সরকারি প্রকল্প নাকি নথিপত্রের নির্দেশ চান তা এটি নিজেই নির্ধারণ করবে।",
+      "আপনার জীবনে কী ঘটছে তা আপনার নিজের ভাষায় সহজ কথায় বলুন। আপনি ধাপে ধাপে নির্দেশিকা, একটি অভিযোগের খসড়া, সরকারি প্রকল্প নাকি নথিপত্রের নির্দেশ চান তা এটি নিজেই নির্ধারণ করবে।",
     tryOne: "এগুলির একটি চেষ্টা করুন",
+    features: [
+      "জীবন ঘটনা যাত্রা",
+      "অভিযোগ খসড়া",
+      "প্রকল্প মিলান",
+      "নথি নির্দেশিকা",
+      "ফলো-আপ উত্তর",
+    ],
+    chips: [
+      "আমার সদ্য সন্তান হয়েছে",
+      "ভাঙা রাস্তার বাতির অভিযোগ",
+      "আমি কিসের জন্য যোগ্য?",
+      "ছোট ব্যবসা শুরু করছি",
+      "আমার চাকরি গেছে",
+    ],
+    footer:
+      "এই নির্দেশিকা AI-দ্বারা তৈরি — ফি এবং সময়সীমা আপনার স্থানীয় অফিসে যাচাই করুন। কোনো লগইন নেই, কিছু সংরক্ষিত হয় না।",
+    footerLabels: ["AI নির্দেশিকা", "অফিসে যাচাই করুন", "কিছু সংরক্ষিত হয় না"],
   },
   Marathi: {
     headline: "प्रत्येक नागरी समस्येसाठी एक सोबती",
     subheadline:
       "तुमच्या आयुष्यात काय घडत आहे ते तुमच्या स्वतःच्या भाषेत, सोप्या शब्दात सांगा. तुम्हाला टप्प्याटप्प्याने मार्गदर्शक, तक्रारीचा मसुदा, सरकारी योजना किंवा कागदपत्रांची माहिती हवी आहे का, हे हे स्वतः ठरवेल.",
     tryOne: "यापैकी एक प्रयत्न करा",
+    features: [
+      "जीवन घटना मार्गदर्शक",
+      "तक्रार मसुदा",
+      "योजना जुळणी",
+      "कागदपत्र मार्गदर्शन",
+      "पाठपुरावा उत्तरे",
+    ],
+    chips: [
+      "मला बाळ झाले",
+      "तुटलेल्या पथदिव्याची तक्रार",
+      "मी कशासाठी पात्र आहे?",
+      "छोटा व्यवसाय सुरू करत आहे",
+      "माझी नोकरी गेली",
+    ],
+    footer:
+      "हे मार्गदर्शन AI-निर्मित आहे — शुल्क आणि मुदती तुमच्या स्थानिक कार्यालयात तपासा. कोणतेही लॉगिन नाही, काहीही साठवले जात नाही.",
+    footerLabels: ["AI मार्गदर्शन", "अधिकाऱ्यांकडे तपासा", "काहीही साठवले जात नाही"],
   },
 };
+
+const FEATURE_ICONS = [Milestone, FileText, Sparkles, BookOpen, MessageSquare];
 
 export default function Home() {
   const [language, setLanguage] = useState("English");
@@ -177,21 +300,31 @@ export default function Home() {
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-16 sm:px-6 sm:py-24">
+      {/* ── hero with staggered entrance ─────────────────── */}
       <motion.header
-        initial={{ opacity: 0, y: 10, scale: 0.99 }}
-        animate={{ opacity: 1, y: 0, scale: 1 }}
-        transition={{ duration: 0.5, ease: "easeOut" }}
+        variants={heroContainer}
+        initial="hidden"
+        animate="show"
       >
-        <p className="flex items-center gap-1 font-mono text-xs uppercase tracking-[0.25em] text-accent font-semibold">
+        <motion.p
+          variants={heroItem}
+          className="flex items-center gap-1 font-mono text-xs uppercase tracking-[0.25em] text-accent font-semibold"
+        >
           <LogoMark />
           Kadam
-        </p>
-        <h1 className="mt-4 font-display text-3xl font-bold tracking-tight text-ink sm:text-[42px] leading-[1.1] sm:leading-[1.15]">
+        </motion.p>
+        <motion.h1
+          variants={heroItem}
+          className="mt-4 font-display text-3xl font-bold tracking-tight text-ink sm:text-[42px] leading-[1.1] sm:leading-[1.15]"
+        >
           {strings.headline}
-        </h1>
-        <p className="mt-4 max-w-2xl text-[16px] sm:text-[17px] leading-relaxed text-ink/70 font-normal tracking-wide">
+        </motion.h1>
+        <motion.p
+          variants={heroItem}
+          className="mt-4 max-w-2xl text-[16px] sm:text-[17px] leading-relaxed text-ink/70 font-normal tracking-wide"
+        >
           {strings.subheadline}
-        </p>
+        </motion.p>
       </motion.header>
 
       <motion.div
@@ -216,36 +349,18 @@ export default function Home() {
             animate="show"
             className="flex flex-wrap items-start justify-center gap-y-8 gap-x-8 sm:flex-nowrap sm:justify-between text-center"
           >
-            <motion.div variants={itemVariants} className="flex flex-col items-center gap-1.5 flex-1 min-w-[90px]">
-              <Milestone className="h-5 w-5 text-ink/50" aria-hidden />
-              <span className="text-xs text-ink/65 leading-relaxed">
-                Life event journeys
-              </span>
-            </motion.div>
-            <motion.div variants={itemVariants} className="flex flex-col items-center gap-1.5 flex-1 min-w-[90px]">
-              <FileText className="h-5 w-5 text-ink/50" aria-hidden />
-              <span className="text-xs text-ink/65 leading-relaxed">
-                Complaint drafting
-              </span>
-            </motion.div>
-            <motion.div variants={itemVariants} className="flex flex-col items-center gap-1.5 flex-1 min-w-[90px]">
-              <Sparkles className="h-5 w-5 text-ink/50" aria-hidden />
-              <span className="text-xs text-ink/65 leading-relaxed">
-                Scheme matching
-              </span>
-            </motion.div>
-            <motion.div variants={itemVariants} className="flex flex-col items-center gap-1.5 flex-1 min-w-[90px]">
-              <BookOpen className="h-5 w-5 text-ink/50" aria-hidden />
-              <span className="text-xs text-ink/65 leading-relaxed">
-                Document guidance
-              </span>
-            </motion.div>
-            <motion.div variants={itemVariants} className="flex flex-col items-center gap-1.5 flex-1 min-w-[90px]">
-              <MessageSquare className="h-5 w-5 text-ink/50" aria-hidden />
-              <span className="text-xs text-ink/65 leading-relaxed">
-                Follow-up answers
-              </span>
-            </motion.div>
+            {FEATURE_ICONS.map((Icon, i) => (
+              <motion.div
+                key={i}
+                variants={itemVariants}
+                className="flex flex-col items-center gap-1.5 flex-1 min-w-[90px]"
+              >
+                <Icon className="h-5 w-5 text-ink/50" aria-hidden />
+                <span className="text-xs text-ink/65 leading-relaxed">
+                  {strings.features[i]}
+                </span>
+              </motion.div>
+            ))}
           </motion.div>
 
           <motion.div
@@ -257,7 +372,11 @@ export default function Home() {
             <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-ink/40">
               {strings.tryOne}
             </p>
-            <SuggestionChips onPick={(m) => ask(m)} disabled={loading} />
+            <SuggestionChips
+              onPick={(m) => ask(m)}
+              disabled={loading}
+              chipLabels={strings.chips}
+            />
           </motion.div>
         </div>
       )}
@@ -276,9 +395,31 @@ export default function Home() {
         )}
       </main>
 
-      <footer className="mt-20 border-t border-border pt-6 text-xs text-ink/45">
-        Guidance is AI-generated and may be incomplete — verify fees and
-        deadlines with your local office. No login, nothing stored.
+      {/* ── trust footer ─────────────────────────────────── */}
+      <footer className="mt-20 border-t border-border pt-8">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:gap-8">
+          <div className="flex items-start gap-2 flex-1">
+            <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-ink/30" aria-hidden />
+            <span className="text-xs leading-relaxed text-ink/45">
+              {strings.footerLabels[0]}
+            </span>
+          </div>
+          <div className="flex items-start gap-2 flex-1">
+            <Eye className="mt-0.5 h-4 w-4 shrink-0 text-ink/30" aria-hidden />
+            <span className="text-xs leading-relaxed text-ink/45">
+              {strings.footerLabels[1]}
+            </span>
+          </div>
+          <div className="flex items-start gap-2 flex-1">
+            <HardDrive className="mt-0.5 h-4 w-4 shrink-0 text-ink/30" aria-hidden />
+            <span className="text-xs leading-relaxed text-ink/45">
+              {strings.footerLabels[2]}
+            </span>
+          </div>
+        </div>
+        <p className="mt-4 text-[11px] leading-relaxed text-ink/35">
+          {strings.footer}
+        </p>
       </footer>
     </div>
   );

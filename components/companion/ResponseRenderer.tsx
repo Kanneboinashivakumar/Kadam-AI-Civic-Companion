@@ -21,7 +21,7 @@ function DocumentGuidance({ data }: { data: DocumentResponse }) {
         <ScrollText className="h-6 w-6 text-accent" aria-hidden />
         {data.document_name}
       </h2>
-      <Card className="mt-4 space-y-4 p-5">
+      <Card className="mt-4 space-y-5 p-6">
         <div>
           <p className="font-mono text-[11px] uppercase tracking-wider text-ink/60">
             What it&rsquo;s for
@@ -59,7 +59,7 @@ function FollowupAnswer({ data }: { data: FollowupResponse }) {
       transition={{ duration: 0.4, ease: "easeOut" }}
     >
       <Badge tone="neutral">Follow-up Answer</Badge>
-      <Card className="mt-3 p-5">
+      <Card className="mt-3 p-6">
         <p className="inline-flex items-start gap-2.5 whitespace-pre-line text-[15px] leading-relaxed text-ink/90">
           <MessageCircleQuestion className="mt-0.5 h-5 w-5 shrink-0 text-accent" aria-hidden />
           {data.answer}

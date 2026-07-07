@@ -50,7 +50,7 @@ export default function FollowupThread({
                 <CornerDownRight className="mt-0.5 h-4 w-4 shrink-0 text-accent" aria-hidden />
                 {item.question}
               </p>
-              <Card className="mt-2 p-4">
+              <Card className="mt-2 p-5">
                 <Badge tone="neutral">Follow-up Answer</Badge>
                 <p className="mt-2 whitespace-pre-line text-sm leading-relaxed text-ink/85">
                   {item.answer}

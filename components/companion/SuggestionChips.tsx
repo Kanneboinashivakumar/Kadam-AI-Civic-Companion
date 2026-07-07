@@ -14,13 +14,15 @@ const CHIP_PROMPTS: Record<string, string> = {
 export default function SuggestionChips({
   onPick,
   disabled,
+  chipLabels,
 }: {
   onPick: (message: string) => void;
   disabled: boolean;
+  chipLabels?: string[];
 }) {
   return (
     <div className="flex flex-wrap gap-2.5">
-      {SUGGESTION_CHIPS.map((chip) => (
+      {SUGGESTION_CHIPS.map((chip, i) => (
         <motion.button
           key={chip}
           onClick={() => onPick(CHIP_PROMPTS[chip] || chip)}
@@ -30,7 +32,7 @@ export default function SuggestionChips({
           transition={{ type: "spring", stiffness: 450, damping: 18 }}
           className="rounded-full border border-border bg-white px-4 py-2 text-xs sm:text-sm text-ink/85 transition-colors hover:border-accent hover:text-ink hover:bg-accent/5 disabled:opacity-50 cursor-pointer shadow-[0_1px_2px_rgba(0,0,0,0.02)] select-none focus:outline-none focus:ring-1 focus:ring-accent"
         >
-          {chip}
+          {chipLabels?.[i] ?? chip}
         </motion.button>
       ))}
     </div>
