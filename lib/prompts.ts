@@ -55,6 +55,11 @@ export function buildSystemPrompt(
   context?: unknown
 ): string {
   let prompt = SYSTEM_PROMPT.replace("{{language}}", language || "English");
+  
+  // Strong directive at the end of the system prompt to force the output language
+  const strongLanguageDirective = `\n\nCRITICAL DIRECTIVE: Respond entirely in ${language || "English"}. Every part of your response — headings, steps, labels — must be in ${language || "English"}. Do not use English unless the selected language is English.`;
+  prompt += strongLanguageDirective;
+
   if (context) {
     prompt +=
       "\n\n" +
