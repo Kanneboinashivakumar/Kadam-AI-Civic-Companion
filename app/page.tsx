@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { motion } from "framer-motion";
+import { motion, type Variants } from "framer-motion";
 import { Sparkles, Milestone, FileText, BookOpen, MessageSquare } from "lucide-react";
 import InputBar from "@/components/companion/InputBar";
 import SuggestionChips from "@/components/companion/SuggestionChips";
@@ -50,14 +50,33 @@ const LogoMark = () => (
     viewBox="0 0 24 24"
     fill="none"
     stroke="currentColor"
-    strokeWidth="3.5"
+    strokeWidth="2.5"
     strokeLinecap="round"
     strokeLinejoin="round"
     aria-hidden="true"
   >
-    <polyline points="4 20 10 20 10 14 16 14 16 8 22 8" />
+    <path d="M 4 18 C 8 18, 8 12, 12 12 C 16 12, 16 6, 20 6" />
+    <circle cx="4" cy="18" r="2" fill="currentColor" />
+    <circle cx="12" cy="12" r="2" fill="currentColor" />
+    <circle cx="20" cy="6" r="2" fill="currentColor" />
   </svg>
 );
+
+const containerVariants: Variants = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.05,
+      delayChildren: 0.15,
+    },
+  },
+};
+
+const itemVariants: Variants = {
+  hidden: { opacity: 0, y: 8, scale: 0.98 },
+  show: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.4, ease: "easeOut" } },
+};
 
 const UI_STRINGS: Record<
   string,
@@ -157,29 +176,29 @@ export default function Home() {
   const strings = UI_STRINGS[language] || UI_STRINGS.English;
 
   return (
-    <div className="mx-auto max-w-3xl px-4 py-12 sm:px-6 sm:py-20">
+    <div className="mx-auto max-w-3xl px-4 py-16 sm:px-6 sm:py-24">
       <motion.header
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
+        initial={{ opacity: 0, y: 10, scale: 0.99 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
         transition={{ duration: 0.5, ease: "easeOut" }}
       >
-        <p className="flex items-center gap-1 font-mono text-xs uppercase tracking-[0.2em] text-accent">
+        <p className="flex items-center gap-1 font-mono text-xs uppercase tracking-[0.25em] text-accent font-semibold">
           <LogoMark />
           Kadam
         </p>
-        <h1 className="mt-3 font-display text-3xl font-semibold leading-tight text-ink sm:text-4xl">
+        <h1 className="mt-4 font-display text-3xl font-bold tracking-tight text-ink sm:text-[42px] leading-[1.1] sm:leading-[1.15]">
           {strings.headline}
         </h1>
-        <p className="mt-3 max-w-xl text-[15px] leading-relaxed text-ink/70">
+        <p className="mt-4 max-w-2xl text-[16px] sm:text-[17px] leading-relaxed text-ink/70 font-normal tracking-wide">
           {strings.subheadline}
         </p>
       </motion.header>
 
       <motion.div
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, ease: "easeOut", delay: 0.15 }}
-        className="mt-10"
+        initial={{ opacity: 0, y: 10, scale: 0.99 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ duration: 0.5, ease: "easeOut", delay: 0.12 }}
+        className="mt-12 sm:mt-16"
       >
         <InputBar
           onSubmit={(m) => ask(m)}
@@ -190,50 +209,60 @@ export default function Home() {
       </motion.div>
 
       {!response && !loading && (
-        <div className="mt-12 space-y-10">
-          <div className="flex flex-wrap items-start justify-center gap-y-8 gap-x-8 sm:flex-nowrap sm:justify-between text-center">
-            <div className="flex flex-col items-center gap-1.5 flex-1 min-w-[90px]">
+        <div className="mt-16 space-y-12">
+          <motion.div
+            variants={containerVariants}
+            initial="hidden"
+            animate="show"
+            className="flex flex-wrap items-start justify-center gap-y-8 gap-x-8 sm:flex-nowrap sm:justify-between text-center"
+          >
+            <motion.div variants={itemVariants} className="flex flex-col items-center gap-1.5 flex-1 min-w-[90px]">
               <Milestone className="h-5 w-5 text-ink/50" aria-hidden />
               <span className="text-xs text-ink/65 leading-relaxed">
                 Life event journeys
               </span>
-            </div>
-            <div className="flex flex-col items-center gap-1.5 flex-1 min-w-[90px]">
+            </motion.div>
+            <motion.div variants={itemVariants} className="flex flex-col items-center gap-1.5 flex-1 min-w-[90px]">
               <FileText className="h-5 w-5 text-ink/50" aria-hidden />
               <span className="text-xs text-ink/65 leading-relaxed">
                 Complaint drafting
               </span>
-            </div>
-            <div className="flex flex-col items-center gap-1.5 flex-1 min-w-[90px]">
+            </motion.div>
+            <motion.div variants={itemVariants} className="flex flex-col items-center gap-1.5 flex-1 min-w-[90px]">
               <Sparkles className="h-5 w-5 text-ink/50" aria-hidden />
               <span className="text-xs text-ink/65 leading-relaxed">
                 Scheme matching
               </span>
-            </div>
-            <div className="flex flex-col items-center gap-1.5 flex-1 min-w-[90px]">
+            </motion.div>
+            <motion.div variants={itemVariants} className="flex flex-col items-center gap-1.5 flex-1 min-w-[90px]">
               <BookOpen className="h-5 w-5 text-ink/50" aria-hidden />
               <span className="text-xs text-ink/65 leading-relaxed">
                 Document guidance
               </span>
-            </div>
-            <div className="flex flex-col items-center gap-1.5 flex-1 min-w-[90px]">
+            </motion.div>
+            <motion.div variants={itemVariants} className="flex flex-col items-center gap-1.5 flex-1 min-w-[90px]">
               <MessageSquare className="h-5 w-5 text-ink/50" aria-hidden />
               <span className="text-xs text-ink/65 leading-relaxed">
                 Follow-up answers
               </span>
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
 
-          <div className="mt-8 border-t border-border/40 pt-8">
-            <p className="mb-2 text-xs font-medium uppercase tracking-wider text-ink/50">
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, ease: "easeOut", delay: 0.25 }}
+            className="mt-8 border-t border-border/40 pt-8"
+          >
+            <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-ink/40">
               {strings.tryOne}
             </p>
             <SuggestionChips onPick={(m) => ask(m)} disabled={loading} />
-          </div>
+          </motion.div>
         </div>
       )}
 
-      <main className="mt-10">
+      <main className="mt-12">
         {loading && <ReasoningIndicator />}
         {!loading && response && (
           <>
@@ -247,7 +276,7 @@ export default function Home() {
         )}
       </main>
 
-      <footer className="mt-16 border-t border-border pt-5 text-xs text-ink/45">
+      <footer className="mt-20 border-t border-border pt-6 text-xs text-ink/45">
         Guidance is AI-generated and may be incomplete — verify fees and
         deadlines with your local office. No login, nothing stored.
       </footer>
