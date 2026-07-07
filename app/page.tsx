@@ -11,6 +11,17 @@ import SuggestionChips from "@/components/companion/SuggestionChips";
 import ResponseRenderer from "@/components/companion/ResponseRenderer";
 import FollowupThread, { type FollowupItem } from "@/components/companion/FollowupThread";
 import type { CompanionResponse } from "@/lib/schema";
+import Button from "@/components/ui/Button";
+import Card from "@/components/ui/Card";
+import {
+  saveSession,
+  loadSession,
+  clearSession,
+  incrementInsight,
+  getMostCommonType,
+  clearAllData,
+  type SavedSession,
+} from "@/lib/session";
 
 async function callGenerate(body: {
   message: string;
@@ -257,6 +268,16 @@ export default function Home() {
   const [followups, setFollowups] = useState<FollowupItem[]>([]);
   const [followupLoading, setFollowupLoading] = useState(false);
   const [showIntro, setShowIntro] = useState(true);
+  const [savedSession, setSavedSession] = useState<SavedSession | null>(null);
+
+  useEffect(() => {
+    const saved = loadSession();
+    if (saved) {
+      setTimeout(() => {
+        setSavedSession(saved);
+      }, 0);
+    }
+  }, []);
 
   useEffect(() => {
     const timer = setTimeout(() => setShowIntro(false), 3400);
@@ -271,6 +292,13 @@ export default function Home() {
     try {
       const data = await callGenerate({ message, language: lang });
       setResponse(data);
+      saveSession({
+        lastMessage: message,
+        language: lang,
+        response: data,
+        followups: [],
+      });
+      incrementInsight(data.type);
     } catch {
       // The route itself falls back on failure; this only fires if the
       // network is down entirely. Keep the screen calm either way.
@@ -290,12 +318,27 @@ export default function Home() {
         context: response,
       });
       if (data.type === "followup") {
-        setFollowups((prev) => [...prev, { question, answer: data.answer }]);
+        const nextFollowups = [...followups, { question, answer: data.answer }];
+        setFollowups(nextFollowups);
+        saveSession({
+          lastMessage,
+          language,
+          response,
+          followups: nextFollowups,
+        });
+        incrementInsight("followup");
       } else {
         // The engine decided this is really a new situation — honor it.
         setResponse(data);
         setFollowups([]);
         setLastMessage(question);
+        saveSession({
+          lastMessage: question,
+          language,
+          response: data,
+          followups: [],
+        });
+        incrementInsight(data.type);
       }
     } finally {
       setFollowupLoading(false);
@@ -446,6 +489,39 @@ export default function Home() {
         transition={{ duration: 0.5, ease: "easeOut", delay: 0.12 }}
         className="mt-12 sm:mt-16"
       >
+        {savedSession && (
+          <Card className="mb-6 p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-accent/20 bg-accent/5">
+            <div className="text-sm text-ink/80 leading-relaxed">
+              <strong>Continue where you left off?</strong> We found your previous session.
+            </div>
+            <div className="flex gap-2 shrink-0">
+              <Button
+                variant="accent"
+                className="px-2.5 py-1 text-xs font-semibold"
+                onClick={() => {
+                  setLanguage(savedSession.language);
+                  setResponse(savedSession.response);
+                  setFollowups(savedSession.followups);
+                  setLastMessage(savedSession.lastMessage);
+                  setSavedSession(null);
+                }}
+              >
+                Restore
+              </Button>
+              <Button
+                variant="ghost"
+                className="px-2.5 py-1 text-xs font-semibold"
+                onClick={() => {
+                  clearSession();
+                  setSavedSession(null);
+                }}
+              >
+                Dismiss
+              </Button>
+            </div>
+          </Card>
+        )}
+
         <InputBar
           onSubmit={(m) => ask(m)}
           language={language}
@@ -533,6 +609,42 @@ export default function Home() {
         <p className="mt-4 text-[11px] leading-relaxed text-ink/35">
           {strings.footer}
         </p>
+
+        {typeof window !== "undefined" && (
+          <div className="mt-6 flex flex-wrap items-center justify-between gap-4 border-t border-border/50 pt-4 text-[11px] text-ink/50">
+            <div>
+              {(() => {
+                const common = getMostCommonType();
+                if (!common) return null;
+                const typeLabels = {
+                  journey: "Life-Event Journey",
+                  complaint: "Complaint Draft",
+                  scheme: "Scheme Match",
+                  document: "Document Guidance",
+                  followup: "Follow-up Answer",
+                };
+                return (
+                  <span>
+                    Local usage: Most requested is{" "}
+                    <strong>{typeLabels[common.type] || common.type}</strong> ({common.count} times)
+                  </span>
+                );
+              })()}
+            </div>
+            <button
+              onClick={() => {
+                if (confirm("Clear your local session and insights data?")) {
+                  clearAllData();
+                  setSavedSession(null);
+                  window.location.reload();
+                }
+              }}
+              className="hover:text-accent underline transition-colors cursor-pointer"
+            >
+              Clear my data
+            </button>
+          </div>
+        )}
       </footer>
     </div>
         </motion.div>
