@@ -1,0 +1,29 @@
+@import "tailwindcss";
+
+:root {
+  --bg: #F7F7F5;
+  --ink: #14213D;
+  --accent: #E0932F;
+  --success: #1F6F5C;
+  --border: #E4E2DC;
+  --font-display: var(--font-fraunces), 'Fraunces', serif;
+  --font-body: var(--font-plex-sans), 'IBM Plex Sans', sans-serif;
+  --font-mono: var(--font-plex-mono), 'IBM Plex Mono', monospace;
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-ink: var(--ink);
+  --color-accent: var(--accent);
+  --color-success: var(--success);
+  --color-border: var(--border);
+  --font-display: var(--font-display);
+  --font-body: var(--font-body);
+  --font-mono: var(--font-mono);
+}
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+}
