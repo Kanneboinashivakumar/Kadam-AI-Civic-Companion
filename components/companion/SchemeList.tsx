@@ -28,10 +28,10 @@ export default function SchemeList({ data }: { data: SchemeResponse }) {
         </p>
       </motion.div>
 
-      <div className="mt-6 space-y-4">
+      <div className="mt-8 space-y-5">
         {data.matches?.map((match) => (
           <motion.div key={match.name} variants={item}>
-            <Card className="p-5">
+            <Card className="p-6">
               <div className="flex items-start gap-3">
                 <BadgeCheck className="mt-0.5 h-5 w-5 shrink-0 text-success" aria-hidden />
                 <div className="min-w-0 flex-1">

@@ -44,6 +44,63 @@ function ReasoningIndicator() {
   );
 }
 
+const LogoMark = () => (
+  <svg
+    className="h-3.5 w-3.5 text-accent inline-block mr-1.5 align-text-bottom"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="3.5"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    aria-hidden="true"
+  >
+    <polyline points="4 20 10 20 10 14 16 14 16 8 22 8" />
+  </svg>
+);
+
+const UI_STRINGS: Record<
+  string,
+  { headline: string; subheadline: string; tryOne: string }
+> = {
+  English: {
+    headline: "One companion for every civic situation",
+    subheadline:
+      "Tell it what’s happening in your life — in plain words, in your language. It works out whether you need a step-by-step journey, a complaint filed, a scheme match, or a document explained.",
+    tryOne: "Try one of these",
+  },
+  Hindi: {
+    headline: "हर नागरिक समस्या के लिए एक साथी",
+    subheadline:
+      "अपने जीवन की परिस्थिति को सरल भाषा में बताएं। यह तय करेगा कि आपको चरण-दर-चरण प्रक्रिया, शिकायत ड्राफ्ट, योजना मिलान या दस्तावेज़ मार्गदर्शन की आवश्यकता है।",
+    tryOne: "इनमें से कोई एक आज़माएं",
+  },
+  Telugu: {
+    headline: "ప్రతి పౌర సమస్యకు ఒకే తోడు",
+    subheadline:
+      "మీ జీవితంలో ఏమి జరుగుతుందో మీ సొంత మాటల్లో చెప్పండి. మీకు ఒక పద్ధతి ప్రకారం అడుగుల ప్రయాణం కావాలా, ఫిర్యాదు ముసాయిదా కావాలా, పథకం సరిపోలిక కావాలా లేదా పత్రం గురించి వివరణ కావాలా అనేది ఇది నిర్ణయిస్తుంది.",
+    tryOne: "వీటిలో ఒకటి ప్రయత్నించండి",
+  },
+  Tamil: {
+    headline: "ஒவ்வொரு குடிமைச் சூழலுக்கும் ஒரு துணை",
+    subheadline:
+      "உங்கள் வாழ்க்கையில் என்ன நடக்கிறது என்பதை உங்கள் சொந்த மொழியில் எளிய சொற்களில் கூறுங்கள். உங்களுக்கு ஒரு படிநிலை வழிகாட்டி, புகார் வரைவு, திட்டப் பொருத்தம் அல்லது ஆவண விளக்கம் தேவையா என்பதை இதுவே கண்டறியும்.",
+    tryOne: "இவற்றில் ஒன்றை முயற்சிக்கவும்",
+  },
+  Bengali: {
+    headline: "প্রতিটি নাগরিক সমস্যার জন্য একটি সঙ্গী",
+    subheadline:
+      "আপনার জীবনে কী ঘটছে তা আপনার নিজের ভাষায় সহজ কথায় বলুন। আপনি ধাপে ধাপে নির্দেশিকা, একটি অভিযোগের খসড়া, সরকারি প্রকল্প নাকি নথিপত্রের নির্দেশ চান তা এটি নিজেই নির্ধারণ করবে।",
+    tryOne: "এগুলির একটি চেষ্টা করুন",
+  },
+  Marathi: {
+    headline: "प्रत्येक नागरी समस्येसाठी एक सोबती",
+    subheadline:
+      "तुमच्या आयुष्यात काय घडत आहे ते तुमच्या स्वतःच्या भाषेत, सोप्या शब्दात सांगा. तुम्हाला टप्प्याटप्प्याने मार्गदर्शक, तक्रारीचा मसुदा, सरकारी योजना किंवा कागदपत्रांची माहिती हवी आहे का, हे हे स्वतः ठरवेल.",
+    tryOne: "यापैकी एक प्रयत्न करा",
+  },
+};
+
 export default function Home() {
   const [language, setLanguage] = useState("English");
   const [loading, setLoading] = useState(false);
@@ -97,34 +154,44 @@ export default function Home() {
     if (lastMessage && !loading) ask(lastMessage, lang);
   }
 
+  const strings = UI_STRINGS[language] || UI_STRINGS.English;
+
   return (
-    <div className="mx-auto max-w-3xl px-4 py-10 sm:px-6 sm:py-14">
-      <header>
-        <p className="font-mono text-xs uppercase tracking-[0.2em] text-accent">
+    <div className="mx-auto max-w-3xl px-4 py-12 sm:px-6 sm:py-20">
+      <motion.header
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, ease: "easeOut" }}
+      >
+        <p className="flex items-center gap-1 font-mono text-xs uppercase tracking-[0.2em] text-accent">
+          <LogoMark />
           Kadam
         </p>
-        <h1 className="mt-2 font-display text-3xl font-semibold leading-tight text-ink sm:text-4xl">
-          One companion for every civic situation
+        <h1 className="mt-3 font-display text-3xl font-semibold leading-tight text-ink sm:text-4xl">
+          {strings.headline}
         </h1>
         <p className="mt-3 max-w-xl text-[15px] leading-relaxed text-ink/70">
-          Tell it what&rsquo;s happening in your life — in plain words, in your
-          language. It works out whether you need a step-by-step journey, a
-          complaint filed, a scheme match, or a document explained.
+          {strings.subheadline}
         </p>
-      </header>
+      </motion.header>
 
-      <div className="mt-8">
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, ease: "easeOut", delay: 0.15 }}
+        className="mt-10"
+      >
         <InputBar
           onSubmit={(m) => ask(m)}
           language={language}
           onLanguageChange={changeLanguage}
           loading={loading}
         />
-      </div>
+      </motion.div>
 
       {!response && !loading && (
-        <div className="mt-8 space-y-8">
-          <div className="flex flex-wrap items-start justify-center gap-y-6 gap-x-8 sm:flex-nowrap sm:justify-between text-center">
+        <div className="mt-12 space-y-10">
+          <div className="flex flex-wrap items-start justify-center gap-y-8 gap-x-8 sm:flex-nowrap sm:justify-between text-center">
             <div className="flex flex-col items-center gap-1.5 flex-1 min-w-[90px]">
               <Milestone className="h-5 w-5 text-ink/50" aria-hidden />
               <span className="text-xs text-ink/65 leading-relaxed">
@@ -157,16 +224,16 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="mt-6 border-t border-border/40 pt-6">
+          <div className="mt-8 border-t border-border/40 pt-8">
             <p className="mb-2 text-xs font-medium uppercase tracking-wider text-ink/50">
-              Try one of these
+              {strings.tryOne}
             </p>
             <SuggestionChips onPick={(m) => ask(m)} disabled={loading} />
           </div>
         </div>
       )}
 
-      <main className="mt-8">
+      <main className="mt-10">
         {loading && <ReasoningIndicator />}
         {!loading && response && (
           <>
@@ -180,7 +247,7 @@ export default function Home() {
         )}
       </main>
 
-      <footer className="mt-14 border-t border-border pt-4 text-xs text-ink/45">
+      <footer className="mt-16 border-t border-border pt-5 text-xs text-ink/45">
         Guidance is AI-generated and may be incomplete — verify fees and
         deadlines with your local office. No login, nothing stored.
       </footer>

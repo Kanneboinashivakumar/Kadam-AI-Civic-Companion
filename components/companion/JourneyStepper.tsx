@@ -86,10 +86,10 @@ export default function JourneyStepper({ data }: { data: JourneyResponse }) {
         </p>
       </motion.div>
 
-      <ol className="mt-6 space-y-4">
+      <ol className="mt-8 space-y-6">
         {steps.map((step, i) => (
           <motion.li key={step.id ?? i} variants={item}>
-            <Card className="relative p-5">
+            <Card className="relative p-6">
               <div className="flex items-start gap-4">
                 <span className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-ink font-mono text-sm text-bg">
                   {i + 1}
@@ -141,7 +141,7 @@ export default function JourneyStepper({ data }: { data: JourneyResponse }) {
       </ol>
 
       {data.schemes?.length > 0 && (
-        <motion.div variants={item} className="mt-8">
+        <motion.div variants={item} className="mt-10 border-t border-border pt-8">
           <h3 className="flex items-center gap-2 font-display text-lg font-semibold text-ink">
             <BadgeCheck className="h-5 w-5 text-success" aria-hidden />
             Schemes you may qualify for

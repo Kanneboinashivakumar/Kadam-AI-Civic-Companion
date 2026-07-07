@@ -13,6 +13,33 @@ export const LANGUAGES = [
   { value: "Marathi", label: "Marathi (मराठी)" },
 ];
 
+const INPUT_STRINGS: Record<string, { placeholder: string; ask: string }> = {
+  English: {
+    placeholder: "Describe your situation in your own words…",
+    ask: "Ask",
+  },
+  Hindi: {
+    placeholder: "अपनी समस्या को अपने शब्दों में बताएं…",
+    ask: "पूछें",
+  },
+  Telugu: {
+    placeholder: "మీ సమస్యను మీ స్వంత మాటలలో వివరించండి…",
+    ask: "అడగండి",
+  },
+  Tamil: {
+    placeholder: "உங்கள் சூழ்நிலையை உங்கள் சொந்த வார்த்தைகளில் விவரிக்கவும்…",
+    ask: "கேள்",
+  },
+  Bengali: {
+    placeholder: "আপনার নিজের ভাষায় সমস্যাটি বর্ণনা করুন…",
+    ask: "জিজ্ঞাসা করুন",
+  },
+  Marathi: {
+    placeholder: "तुमची परिस्थिती तुमच्या स्वतःच्या शब्दात सांगा…",
+    ask: "विचारा",
+  },
+};
+
 export default function InputBar({
   onSubmit,
   language,
@@ -25,6 +52,7 @@ export default function InputBar({
   loading: boolean;
 }) {
   const [message, setMessage] = useState("");
+  const strings = INPUT_STRINGS[language] || INPUT_STRINGS.English;
 
   function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -42,7 +70,7 @@ export default function InputBar({
       <input
         value={message}
         onChange={(e) => setMessage(e.target.value)}
-        placeholder="Describe your situation in your own words…"
+        placeholder={strings.placeholder}
         className="min-w-0 flex-1 bg-transparent px-2 py-2 text-[15px] text-ink placeholder:text-ink/40 focus:outline-none"
         disabled={loading}
         aria-label="Describe your civic situation"
@@ -66,7 +94,7 @@ export default function InputBar({
         <Button type="submit" variant="primary" disabled={loading || !message.trim()}>
           <span className="inline-flex items-center gap-1.5">
             <Send className="h-4 w-4" aria-hidden />
-            Ask
+            {strings.ask}
           </span>
         </Button>
       </div>

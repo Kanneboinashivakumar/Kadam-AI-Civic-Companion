@@ -54,8 +54,8 @@ export default function ComplaintCard({ data }: { data: ComplaintResponse }) {
         </div>
       </motion.div>
 
-      <motion.div variants={item} className="mt-5">
-        <Card className="p-5">
+      <motion.div variants={item} className="mt-6">
+        <Card className="p-6">
           <div className="flex items-center justify-between gap-3">
             <p className="font-mono text-[11px] uppercase tracking-wider text-ink/60">
               Ready-to-file complaint text
@@ -79,11 +79,11 @@ export default function ComplaintCard({ data }: { data: ComplaintResponse }) {
       </motion.div>
 
       {data.next_steps?.length > 0 && (
-        <motion.div variants={item} className="mt-5">
+        <motion.div variants={item} className="mt-8 border-t border-border pt-8">
           <h3 className="font-display text-lg font-semibold text-ink">
             What to do next
           </h3>
-          <ol className="mt-2 space-y-2">
+          <ol className="mt-3 space-y-2">
             {data.next_steps.map((step, i) => (
               <li key={i} className="flex items-start gap-3 text-sm leading-relaxed text-ink/85">
                 <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-md bg-border/60 font-mono text-[11px] text-ink">
@@ -99,7 +99,7 @@ export default function ComplaintCard({ data }: { data: ComplaintResponse }) {
       {data.reasoning && (
         <motion.p
           variants={item}
-          className="mt-5 rounded-md border-l-2 border-accent bg-accent/5 px-3 py-2 text-[13px] leading-relaxed text-ink/75"
+          className="mt-8 rounded-md border-l-2 border-accent bg-accent/5 px-3 py-2 text-[13px] leading-relaxed text-ink/75"
         >
           <span className="font-medium text-ink">Why it was classified this way: </span>
           {data.reasoning}
