@@ -59,6 +59,25 @@ The user is following up on this previously generated response:
 Stay grounded in this context. If unrelated, gently redirect to the topic.
 ```
 
+## Grounding data (real schemes) — added in the grounding phase
+When the route builds the system prompt it appends a **grounding block** listing
+the curated real schemes relevant to the user's message (from `lib/data/schemes.ts`),
+with this instruction:
+
+```
+GROUNDING DATA — REAL GOVERNMENT SCHEMES:
+When your response recommends schemes (a "scheme" response, or the "schemes"
+list inside a "journey"), base those recommendations ONLY on the curated real
+scheme data below. Only use schemes from this list. Do not invent scheme names,
+eligibility rules, or benefit amounts. If none of these schemes fit the user's
+situation, say so plainly in your response rather than inventing one.
+```
+
+The route then annotates each returned scheme match with `grounded` (boolean) and
+`source` (official portal) by matching names against the curated dataset — the
+model is never trusted to self-report grounding. These are additive, optional
+fields; the existing `scheme`/`journey` response shapes are unchanged.
+
 ## Suggestion chips (shown on first load, not typed by user)
 - "I just had a baby"
 - "I want to report a broken streetlight"

@@ -7,6 +7,7 @@ import Card from "@/components/ui/Card";
 import JourneyStepper from "./JourneyStepper";
 import ComplaintCard from "./ComplaintCard";
 import SchemeList from "./SchemeList";
+import ErrorBoundary from "./ErrorBoundary";
 import type { CompanionResponse, DocumentResponse, FollowupResponse } from "@/lib/schema";
 
 function DocumentGuidance({ data }: { data: DocumentResponse }) {
@@ -69,27 +70,35 @@ function FollowupAnswer({ data }: { data: FollowupResponse }) {
   );
 }
 
-export default function ResponseRenderer({ response }: { response: CompanionResponse }) {
+export default function ResponseRenderer({
+  response,
+  trustBadges,
+}: {
+  response: CompanionResponse;
+  trustBadges?: { verified: string; estimate: string };
+}) {
   const showTrustFooter = ["journey", "complaint", "scheme", "document"].includes(response.type);
 
   return (
     <div className="space-y-4">
-      {(() => {
-        switch (response.type) {
-          case "journey":
-            return <JourneyStepper data={response} />;
-          case "complaint":
-            return <ComplaintCard data={response} />;
-          case "scheme":
-            return <SchemeList data={response} />;
-          case "document":
-            return <DocumentGuidance data={response} />;
-          case "followup":
-            return <FollowupAnswer data={response} />;
-          default:
-            return null;
-        }
-      })()}
+      <ErrorBoundary>
+        {(() => {
+          switch (response.type) {
+            case "journey":
+              return <JourneyStepper data={response} />;
+            case "complaint":
+              return <ComplaintCard data={response} />;
+            case "scheme":
+              return <SchemeList data={response} trustBadges={trustBadges} />;
+            case "document":
+              return <DocumentGuidance data={response} />;
+            case "followup":
+              return <FollowupAnswer data={response} />;
+            default:
+              return null;
+          }
+        })()}
+      </ErrorBoundary>
       {showTrustFooter && (
         <motion.p
           initial={{ opacity: 0 }}

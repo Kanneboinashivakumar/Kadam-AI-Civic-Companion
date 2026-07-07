@@ -78,6 +78,53 @@ test("SuggestionChips triggers onPick with English prompt value when clicked", (
   root.unmount();
 });
 
+test("InputBar renders and submits normally when SpeechRecognition is unavailable", () => {
+  // Simulate an unsupported browser: no SpeechRecognition constructors present.
+  delete (window as any).SpeechRecognition;
+  delete (window as any).webkitSpeechRecognition;
+
+  const container = document.createElement("div");
+  const root = createRoot(container);
+  let submittedMessage = "";
+
+  act(() => {
+    root.render(
+      <InputBar
+        onSubmit={(msg) => {
+          submittedMessage = msg;
+        }}
+        language="English"
+        onLanguageChange={() => {}}
+        loading={false}
+      />
+    );
+  });
+
+  // Mic button (labelled "Speak") must be hidden entirely, not broken.
+  const micButton = container.querySelector('button[aria-label="Speak"]');
+  expect(micButton).toBeNull();
+
+  // Typing + submit must still work exactly as before.
+  const input = container.querySelector("input") as HTMLInputElement;
+  const form = container.querySelector("form") as HTMLFormElement;
+
+  act(() => {
+    const nativeInputValueSetter = Object.getOwnPropertyDescriptor(
+      HTMLInputElement.prototype,
+      "value"
+    )?.set;
+    nativeInputValueSetter?.call(input, "I lost my job");
+    input.dispatchEvent(new Event("input", { bubbles: true }));
+  });
+
+  act(() => {
+    form.dispatchEvent(new Event("submit", { bubbles: true }));
+  });
+
+  expect(submittedMessage).toBe("I lost my job");
+  root.unmount();
+});
+
 test("InputBar triggers onSubmit with typed value", () => {
   const container = document.createElement("div");
   const root = createRoot(container);

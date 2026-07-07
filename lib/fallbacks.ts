@@ -3,7 +3,13 @@ import type {
   ComplaintResponse,
   FollowupResponse,
   JourneyResponse,
+  SchemeResponse,
 } from "./schema";
+import {
+  groundSchemeMatches,
+  pickSchemesByName,
+  toSchemeMatch,
+} from "./data/schemes";
 
 // Pre-generated known-good responses. If the live Gemini call fails or times
 // out during the demo, the route silently serves one of these — never a raw
@@ -100,6 +106,22 @@ export const FALLBACK_JOURNEY: JourneyResponse = {
   priority_order: ["step-1", "step-2", "step-3", "step-4"],
 };
 
+// The hand-written journey copy above already names real schemes; annotate them
+// against the curated dataset so the fallback also serves grounded data.
+FALLBACK_JOURNEY.schemes = groundSchemeMatches(FALLBACK_JOURNEY.schemes);
+
+// Grounded scheme fallback, built entirely from the curated dataset so an
+// offline "what am I eligible for?" still returns only real schemes.
+export const FALLBACK_SCHEME: SchemeResponse = {
+  type: "scheme",
+  matches: pickSchemesByName([
+    "Ayushman Bharat – Pradhan Mantri Jan Arogya Yojana (PM-JAY)",
+    "Pradhan Mantri Suraksha Bima Yojana (PMSBY)",
+    "Pradhan Mantri Jeevan Jyoti Bima Yojana (PMJJBY)",
+    "Atal Pension Yojana (APY)",
+  ]).map(toSchemeMatch),
+};
+
 export const FALLBACK_COMPLAINT: ComplaintResponse = {
   type: "complaint",
   department: "Municipal Corporation — Electrical / Street Lighting Division",
@@ -133,5 +155,8 @@ export function getFallback(
   const complaintWords =
     /report|complain|broken|not working|garbage|pothole|leak|streetlight|overflow|noise|stray/i;
   if (complaintWords.test(message || "")) return FALLBACK_COMPLAINT;
+  const schemeWords =
+    /eligible|scheme|benefit|subsidy|qualify|yojana|pension|insurance|apply for/i;
+  if (schemeWords.test(message || "")) return FALLBACK_SCHEME;
   return FALLBACK_JOURNEY;
 }

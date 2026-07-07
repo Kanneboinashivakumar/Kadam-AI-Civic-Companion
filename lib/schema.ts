@@ -16,6 +16,11 @@ export type SchemeMatch = {
   eligibility_reasoning: string;
   benefit_summary: string;
   how_to_apply?: string;
+  // Grounding metadata (additive, optional): set by the API route against the
+  // curated real-scheme dataset. `grounded` distinguishes dataset-backed
+  // recommendations from AI-inferred ones; `source` names the official portal.
+  source?: string;
+  grounded?: boolean;
 };
 
 export type JourneyResponse = {
@@ -104,6 +109,8 @@ const journeySchema = {
           name: str,
           eligibility_reasoning: str,
           benefit_summary: str,
+          source: str,
+          grounded: { type: "boolean" },
         },
         required: ["name", "eligibility_reasoning", "benefit_summary"],
       },
@@ -148,6 +155,8 @@ const schemeSchema = {
           eligibility_reasoning: str,
           benefit_summary: str,
           how_to_apply: str,
+          source: str,
+          grounded: { type: "boolean" },
         },
         required: [
           "name",

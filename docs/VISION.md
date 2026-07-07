@@ -23,9 +23,39 @@ A single AI reasoning engine that citizens talk to in plain language. It decides
 Steps/outputs stream in one at a time as the model reasons, not a single dump after a spinner. This visually proves "AI reasoning happening" rather than just claiming it.
 
 ## Non-goals (explicitly out of scope — do not build)
+> **Historical note:** the list below was the *hackathon-scope* boundary and is
+> preserved as-is. Some items are deliberately revisited in the next phase
+> (see below) now that the demo is complete — they were correct constraints
+> for a 4-hour build, not permanent product decisions.
+
 - Authentication / login
 - Persistent database (session state only)
 - Voice input/output
 - Real government API integrations
 - File upload / OCR
 - Multi-user features
+
+## Next phase — from demo prototype toward a credible tool
+The hackathon submission is complete. The original vision above stays intact as
+historical context. The next phase shifts Kadam from "impressive 90-second demo"
+toward "something a citizen could actually trust and rely on." Goals, in priority
+order:
+
+1. **Real data grounding.** Replace fully-generated scheme and document details
+   with references to a real, curated dataset wherever possible, so answers are
+   anchored to verifiable facts rather than model recall. This directly reduces
+   hallucination risk — the biggest credibility gap in the demo build.
+2. **Voice input (Web Speech API).** Let citizens speak their situation instead
+   of typing it, for accessibility and easier regional-language input. Revisits
+   the "no voice" hackathon non-goal above.
+3. **Confidence / verification indicator.** Visibly distinguish answers grounded
+   in the curated dataset from AI-generated best guesses, so users know how much
+   to trust each output. Extends the existing transparency principle (the
+   plain-language `reasoning` field) into a trust signal.
+4. **(Stretch, not yet scheduled)** Optional client-side session save and
+   anonymized usage insights — no accounts, no server-side personal data;
+   purely local persistence plus aggregate, non-identifying signals.
+
+These build on the same single-reasoning-engine architecture rather than
+replacing it — see ARCHITECTURE.md for where they plug in, and TASKS.md for the
+tracked work items.

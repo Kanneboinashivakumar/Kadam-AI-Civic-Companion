@@ -15,7 +15,17 @@ const item: Variants = {
   show: { opacity: 1, y: 0, transition: { duration: 0.4, ease: "easeOut" } },
 };
 
-export default function SchemeList({ data }: { data: SchemeResponse }) {
+export default function SchemeList({
+  data,
+  trustBadges,
+}: {
+  data: SchemeResponse;
+  trustBadges?: { verified: string; estimate: string };
+}) {
+  const { verified: verifiedLabel, estimate: estimateLabel } = trustBadges ?? {
+    verified: "Verified",
+    estimate: "AI-generated estimate",
+  };
   return (
     <motion.div variants={container} initial="hidden" animate="show">
       <motion.div variants={item}>
@@ -38,7 +48,25 @@ export default function SchemeList({ data }: { data: SchemeResponse }) {
                   <h3 className="font-display text-lg font-semibold text-ink">
                     {match.name}
                   </h3>
-                  <p className="mt-1.5 text-sm leading-relaxed text-ink/85">
+                  {/* Grounded vs AI-generated trust indicator. Grounded matches
+                      carry an official source; anything else is flagged as an
+                      estimate the user should verify. Calm, mono, no color pop. */}
+                  <div className="mt-2 flex flex-wrap items-center gap-2">
+                    {match.grounded === true ? (
+                      <Badge tone="success">{verifiedLabel}</Badge>
+                    ) : (
+                      <Badge tone="neutral">{estimateLabel}</Badge>
+                    )}
+                    {match.grounded === true && match.source && (
+                      <span
+                        className="font-mono text-[11px] text-ink/50"
+                        title={match.source}
+                      >
+                        {match.source}
+                      </span>
+                    )}
+                  </div>
+                  <p className="mt-2 text-sm leading-relaxed text-ink/85">
                     {match.benefit_summary}
                   </p>
                   <p className="mt-2 rounded-md border-l-2 border-success bg-success/5 px-3 py-2 text-[13px] leading-relaxed text-ink/75">

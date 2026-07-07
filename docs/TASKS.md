@@ -44,3 +44,22 @@ Update the status of each item as you go. If you are a fresh AI agent picking th
 ## Blocked on you (2 minutes)
 1. Paste a real Gemini API key into `.env.local` (`GEMINI_API_KEY=...`), restart dev server, then re-verify live JSON for all 5 types via the suggestion chips.
 2. Push + connect Vercel, set `GEMINI_API_KEY` in Vercel project settings.
+
+## Next phase (post-hackathon) — tracked work items
+Hackathon submission is complete. These move Kadam from demo prototype toward a
+more credible, production-leaning tool. Do in order; see VISION.md for rationale
+and ARCHITECTURE.md for where each plugs into the existing single-route design.
+
+- [x] **Real data grounding (first pass)** — curated real-scheme dataset in
+      `lib/data/schemes.ts`; `/api/generate` injects the relevant subset into the
+      prompt before the Gemini call and annotates returned schemes with
+      `grounded`/`source` after, so scheme/journey recommendations come from real
+      data instead of pure generation (reduces hallucination risk)
+- [ ] **Voice input (Web Speech API)** — client-side mic capture in `InputBar`
+      that transcribes into the existing text field; locale follows the language
+      selector for regional-language input (accessibility)
+- [ ] **Confidence / verification indicator (UI)** — schema markers exist and are
+      populated (`grounded`/`source`); build the badge in the scheme UI to show
+      dataset-backed vs AI-inferred matches
+- [ ] **(Stretch, not yet scheduled)** optional client-side session save
+      (`localStorage`, no DB) and anonymized, aggregate usage insights

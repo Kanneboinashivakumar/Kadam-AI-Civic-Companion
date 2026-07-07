@@ -1,6 +1,8 @@
 // All system prompts live here, nowhere else. Kept identical to docs/PROMPTS.md —
 // if you change one, change both.
 
+import type { CuratedScheme } from "./data/schemes";
+
 const SYSTEM_PROMPT = `You are the reasoning engine for Smart Bharat, an AI civic companion for
 Indian citizens. Given the user's message (in any language, about any civic
 situation), decide which ONE of these response types best serves them, then
@@ -50,15 +52,40 @@ const FOLLOWUP_ADDITION = `The user is following up on this previously generated
 {{previous_response_json}}
 Stay grounded in this context. If unrelated, gently redirect to the topic.`;
 
+// Grounding block appended when curated schemes are available. Scoped by its
+// own instruction so it only constrains scheme/journey scheme recommendations.
+function buildGroundingBlock(schemes: CuratedScheme[]): string {
+  if (!schemes || schemes.length === 0) return "";
+  const list = schemes
+    .map(
+      (s, i) =>
+        `${i + 1}. ${s.name} — Eligibility: ${s.eligibility} Benefit: ${s.benefit} Source: ${s.source}`
+    )
+    .join("\n");
+  return `\n\nGROUNDING DATA — REAL GOVERNMENT SCHEMES:
+When your response recommends schemes (a "scheme" response, or the "schemes"
+list inside a "journey"), base those recommendations ONLY on the curated real
+scheme data below. Only use schemes from this list. Do not invent scheme names,
+eligibility rules, or benefit amounts. If none of these schemes fit the user's
+situation, say so plainly in your response rather than inventing one.
+
+${list}`;
+}
+
 export function buildSystemPrompt(
   language: string,
-  context?: unknown
+  context?: unknown,
+  grounding?: CuratedScheme[]
 ): string {
   let prompt = SYSTEM_PROMPT.replace("{{language}}", language || "English");
-  
+
   // Strong directive at the end of the system prompt to force the output language
   const strongLanguageDirective = `\n\nCRITICAL DIRECTIVE: Respond entirely in ${language || "English"}. Every part of your response — headings, steps, labels — must be in ${language || "English"}. Do not use English unless the selected language is English.`;
   prompt += strongLanguageDirective;
+
+  if (grounding && grounding.length > 0) {
+    prompt += buildGroundingBlock(grounding);
+  }
 
   if (context) {
     prompt +=

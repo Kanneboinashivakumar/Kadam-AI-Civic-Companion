@@ -10,6 +10,7 @@
 
 <p align="center">
   <a href="https://kadam-ai-civic-companion.vercel.app/"><img src="https://img.shields.io/badge/▶_Live_Demo-kadam--ai-E0932F?style=flat-square" alt="Live Demo" /></a>
+  <a href="https://github.com/Kanneboinashivakumar/Kadam-AI-Civic-Companion/actions/workflows/test.yml"><img src="https://github.com/Kanneboinashivakumar/Kadam-AI-Civic-Companion/actions/workflows/test.yml/badge.svg" alt="CI Build Status" /></a>
   <a href="#-tech-stack"><img src="https://img.shields.io/badge/Next.js-16-000?style=flat-square&logo=nextdotjs" alt="Next.js" /></a>
   <a href="#-tech-stack"><img src="https://img.shields.io/badge/Gemini_2.5-Flash-4285F4?style=flat-square&logo=google" alt="Gemini" /></a>
   <a href="#-tech-stack"><img src="https://img.shields.io/badge/TypeScript-6.0-3178C6?style=flat-square&logo=typescript" alt="TypeScript" /></a>
@@ -39,6 +40,10 @@ Citizens describe their situation in **plain language**, in **their own language
 | 📄 **Document Guidance** | What a document is for, how to obtain it, typical cost and time |
 | 💬 **Follow-up Answer** | Context-aware answers grounded in the previous response |
 
+## 📸 Demo Screenshot
+![Kadam demo](docs/demo.gif)
+> *Note: This screenshot placeholder should be replaced manually with a live recording/screenshot of the interface.*
+
 ---
 
 ## 🏆 Why Kadam Wins
@@ -62,33 +67,18 @@ Many AI civic solutions focus on **reactive question-answering** — the user as
 
 ## 🏗️ Architecture
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│  User types situation in plain language (any of 6 languages)│
-└──────────────────────────┬──────────────────────────────────┘
-                           │
-                    POST /api/generate
-                           │
-              ┌────────────▼────────────┐
-              │   Google Gemini 2.5     │
-              │   Flash (Structured     │
-              │   JSON Output)          │
-              │                         │
-              │  1. Classifies intent   │
-              │  2. Generates payload   │
-              │  3. Returns typed JSON  │
-              └────────────┬────────────┘
-                           │
-              ┌────────────▼────────────┐
-              │   ResponseRenderer      │
-              │   switches on `type`    │
-              │   discriminator         │
-              └────────────┬────────────┘
-                           │
-         ┌─────────┬───────┼───────┬──────────┐
-         ▼         ▼       ▼       ▼          ▼
-    Journey   Complaint  Scheme  Document  Follow-up
-    Stepper    Card      List    Guidance   Answer
+```mermaid
+graph TD
+    User([User Input]) --> Route[POST /api/generate]
+    Dataset[(Curated Grounding Dataset)] -.-> Route
+    Route --> Gemini[Gemini 2.5 Flash]
+    Gemini --> JSON[Typed JSON Response]
+    JSON --> Renderer[ResponseRenderer]
+    Renderer --> Journey[Life-Event Journey]
+    Renderer --> Complaint[Complaint Card]
+    Renderer --> Scheme[Scheme List]
+    Renderer --> Doc[Document Guidance]
+    Renderer --> Followup[Follow-up Answer]
 ```
 
 **One route. One Gemini call. Five distinct UIs.** No chatbot. No message history. No database.
@@ -127,6 +117,8 @@ If Gemini is unavailable (no API key, rate limit, network error), pre-generated 
 ## ✨ Key Features
 
 - **Single reasoning engine** — Gemini classifies intent AND generates structured output in one call
+- **Grounded scheme data** — Grounded in a curated database of 16 real Government of India schemes, showing verified/AI-estimate trust badges in the UI
+- **Voice input** — Native speech-to-text input powered by the Web Speech API
 - **Multilingual UI + AI responses** — English, Hindi, Telugu, Tamil, Bengali, Marathi
 - **Staggered reveal animations** — Steps appear one-by-one as if the AI is reasoning in real-time
 - **Copy-to-clipboard** — One-click copy of journey steps or complaint drafts

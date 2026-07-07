@@ -97,6 +97,7 @@ interface UIStrings {
   chips: [string, string, string, string, string];
   footer: string;
   footerLabels: [string, string, string];
+  trustBadges: { verified: string; estimate: string };
 }
 
 const UI_STRINGS: Record<string, UIStrings> = {
@@ -122,6 +123,7 @@ const UI_STRINGS: Record<string, UIStrings> = {
     footer:
       "Guidance is AI-generated and may be incomplete — verify fees and deadlines with your local office. No login, nothing stored.",
     footerLabels: ["AI-generated guidance", "Verify with officials", "Nothing stored"],
+    trustBadges: { verified: "Verified", estimate: "AI-generated estimate" },
   },
   Hindi: {
     headline: "हर नागरिक समस्या के लिए एक साथी",
@@ -145,6 +147,7 @@ const UI_STRINGS: Record<string, UIStrings> = {
     footer:
       "यह मार्गदर्शन AI-जनित है और अधूरा हो सकता है — शुल्क और समय-सीमा अपने स्थानीय कार्यालय से सत्यापित करें। कोई लॉगिन नहीं, कुछ भी संग्रहित नहीं।",
     footerLabels: ["AI-जनित मार्गदर्शन", "अधिकारियों से सत्यापित करें", "कुछ भी संग्रहित नहीं"],
+    trustBadges: { verified: "सत्यापित", estimate: "एआई-अनुमानित" },
   },
   Telugu: {
     headline: "ప్రతి పౌర సమస్యకు ఒకే తోడు",
@@ -168,6 +171,7 @@ const UI_STRINGS: Record<string, UIStrings> = {
     footer:
       "ఈ మార్గదర్శనం AI ద్వారా రూపొందించబడింది — రుసుములు మరియు గడువులను మీ స్థానిక కార్యాలయంతో ధృవీకరించండి. లాగిన్ లేదు, ఏమీ నిల్వ చేయబడదు.",
     footerLabels: ["AI మార్గదర్శనం", "అధికారికంగా ధృవీకరించండి", "ఏమీ నిల్వ చేయబడదు"],
+    trustBadges: { verified: "ధృవీకరించబడింది", estimate: "AI-అంచనా" },
   },
   Tamil: {
     headline: "ஒவ்வொரு குடிமைச் சூழலுக்கும் ஒரு துணை",
@@ -191,6 +195,7 @@ const UI_STRINGS: Record<string, UIStrings> = {
     footer:
       "இந்த வழிகாட்டுதல் AI மூலம் உருவாக்கப்பட்டது — கட்டணங்களையும் கால அவகாசங்களையும் உங்கள் உள்ளூர் அலுவலகத்தில் சரிபார்க்கவும். உள்நுழைவு இல்லை, எதுவும் சேமிக்கப்படவில்லை.",
     footerLabels: ["AI வழிகாட்டுதல்", "அதிகாரிகளிடம் சரிபார்க்கவும்", "எதுவும் சேமிக்கப்படவில்லை"],
+    trustBadges: { verified: "சரிபார்க்கப்பட்டது", estimate: "AI-மதிப்பீடு" },
   },
   Bengali: {
     headline: "প্রতিটি নাগরিক সমস্যার জন্য একটি সঙ্গী",
@@ -214,6 +219,7 @@ const UI_STRINGS: Record<string, UIStrings> = {
     footer:
       "এই নির্দেশিকা AI-দ্বারা তৈরি — ফি এবং সময়সীমা আপনার স্থানীয় অফিসে যাচাই করুন। কোনো লগইন নেই, কিছু সংরক্ষিত হয় না।",
     footerLabels: ["AI নির্দেশিকা", "অফিসে যাচাই করুন", "কিছু সংরক্ষিত হয় না"],
+    trustBadges: { verified: "যাচাইকৃত", estimate: "AI-অনুমান" },
   },
   Marathi: {
     headline: "प्रत्येक नागरी समस्येसाठी एक सोबती",
@@ -237,6 +243,7 @@ const UI_STRINGS: Record<string, UIStrings> = {
     footer:
       "हे मार्गदर्शन AI-निर्मित आहे — शुल्क आणि मुदती तुमच्या स्थानिक कार्यालयात तपासा. कोणतेही लॉगिन नाही, काहीही साठवले जात नाही.",
     footerLabels: ["AI मार्गदर्शन", "अधिकाऱ्यांकडे तपासा", "काहीही साठवले जात नाही"],
+    trustBadges: { verified: "सत्यापित", estimate: "AI-अंदाज" },
   },
 };
 
@@ -491,7 +498,7 @@ export default function Home() {
         {loading && <ReasoningIndicator />}
         {!loading && response && (
           <>
-            <ResponseRenderer response={response} />
+            <ResponseRenderer response={response} trustBadges={strings.trustBadges} />
             <FollowupThread
               items={followups}
               onAsk={askFollowup}
