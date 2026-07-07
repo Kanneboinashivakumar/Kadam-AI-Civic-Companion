@@ -67,14 +67,13 @@ const LogoMark = () => (
 
 /* ── animation variants ─────────────────────────────────── */
 
-const heroContainer: Variants = {
-  hidden: {},
-  show: { transition: { staggerChildren: 0.15, delayChildren: 0.08 } },
-};
-const heroItem: Variants = {
-  hidden: { opacity: 0, y: 10 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.4, ease: "easeOut" } },
-};
+/* hero beats use explicit delays so each element visibly finishes
+   before the next begins — like a movie title card. */
+const heroBeat = (delay: number, duration: number) => ({
+  initial: { opacity: 0, y: 10 } as const,
+  animate: { opacity: 1, y: 0 } as const,
+  transition: { duration, delay, ease: "easeOut" as const },
+});
 
 const containerVariants: Variants = {
   hidden: { opacity: 0 },
@@ -300,32 +299,33 @@ export default function Home() {
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-16 sm:px-6 sm:py-24">
-      {/* ── hero with staggered entrance ─────────────────── */}
-      <motion.header
-        variants={heroContainer}
-        initial="hidden"
-        animate="show"
-      >
-        <motion.p
-          variants={heroItem}
-          className="flex items-center gap-1 font-mono text-xs uppercase tracking-[0.25em] text-accent font-semibold"
+      {/* ── hero with sequential entrance beats ────────── */}
+      <header>
+        <motion.span
+          {...heroBeat(0, 0.3)}
+          className="inline-block text-accent"
         >
           <LogoMark />
+        </motion.span>
+        <motion.span
+          {...heroBeat(0.3, 0.25)}
+          className="inline-block font-mono text-xs uppercase tracking-[0.25em] text-accent font-semibold ml-1"
+        >
           Kadam
-        </motion.p>
+        </motion.span>
         <motion.h1
-          variants={heroItem}
+          {...heroBeat(0.55, 0.35)}
           className="mt-4 font-display text-3xl font-bold tracking-tight text-ink sm:text-[42px] leading-[1.1] sm:leading-[1.15]"
         >
           {strings.headline}
         </motion.h1>
         <motion.p
-          variants={heroItem}
+          {...heroBeat(0.9, 0.3)}
           className="mt-4 max-w-2xl text-[16px] sm:text-[17px] leading-relaxed text-ink/70 font-normal tracking-wide"
         >
           {strings.subheadline}
         </motion.p>
-      </motion.header>
+      </header>
 
       <motion.div
         initial={{ opacity: 0, y: 10, scale: 0.99 }}
